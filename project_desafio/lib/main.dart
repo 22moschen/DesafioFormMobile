@@ -10,6 +10,7 @@ class CadastroApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Cadastro de Usuário',
       home: Scaffold(
         appBar: AppBar(title: Text('Cadastro')),
@@ -40,27 +41,27 @@ class _CadastroFormState extends State<CadastroForm> {
   bool _aceitaTermos = false;
 
   void _cadastrar() {
-    //  Implementar validação dos campos e exibir SnackBar com nome do usuário
+    //  Implementar validação dos campos e navegar para a tela de confirmação
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Usuário ${_nomeController.text} cadastrado com sucesso!',
-          ),
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ConfirmacaoScreen(nome: _nomeController.text),
         ),
       );
     }
   }
 
   void _limparCampos() {
-    //  Limpar os campos e resetar o formulário
+    // Limpar os campos e resetar o formulário
     _nomeController.clear();
     _emailController.clear();
     _confirmaSenhaController.clear();
     _senhaController.clear();
-    _aceitaTermos = false;
-    _formKey.currentState!.reset();
-    setState(() {});
+    setState(() {
+      _aceitaTermos = false;
+    });
+    // Removido _formKey.currentState!.reset(); pois limpar os controllers e setState já atualizam a UI
   }
 
   @override
@@ -143,6 +144,28 @@ class _CadastroFormState extends State<CadastroForm> {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// criar Nova tela de confirmação, que será exibida após o cadastro bem-sucedido.
+//A segunda tela deve exibir uma mensagem como:
+//"Usuário [NOME] cadastrado com sucesso!"
+class ConfirmacaoScreen extends StatelessWidget {
+  final String nome;
+
+  const ConfirmacaoScreen({super.key, required this.nome});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Confirmação')),
+      body: Center(
+        child: Text(
+          'Usuário $nome cadastrado com sucesso!',
+          style: TextStyle(fontSize: 20),
+        ),
       ),
     );
   }
